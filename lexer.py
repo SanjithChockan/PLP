@@ -1,3 +1,4 @@
+import sys
 # Return Types for lex(input)
 ID_TOKEN = 0 # The thing returned is an ID token
 INT_TOKEN = 1 # The thing returned is an INT token
@@ -151,10 +152,13 @@ def lex(input):
         return [[ERROR, "Unexpected character '" + input[0] + "' on line " + str(line)], input]
 
 
+#print("Enter program: ")
+#input = list(sys.stdin.read())
+#[next, input] = lex(input)
 
-while next[0] != END_OF_INPUT and next[0] != ERROR:
-    print(next)
-    [next, input] = lex(input)
-
-if next[0] == ERROR:
-    print("ERROR: " + next[1])
+#while next[0] != END_OF_INPUT and next[0] != ERROR:
+#    print(next)
+#    [next, input] = lex(input)
+#
+#if next[0] == ERROR:
+#    print("ERROR: " + next[1])

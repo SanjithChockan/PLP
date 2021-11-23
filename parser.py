@@ -8,7 +8,9 @@ def lex():
     global input
     [nextToken, input] = lexer.lex(input)
 
+# takes either a STRING or an EXPR
 def parg():
+    print("At parg(), nextToken[0] == ", nextToken[0])
     good = nextToken[0] == lexer.STRING_TOKEN
     if good:
         lex()
@@ -17,6 +19,7 @@ def parg():
     return good
 
 def parsePrint():
+    print("In parsePrint()")
     if nextToken[0] != lexer.LEXEME:
         parseError("Expected command got: " + str(nextToken))
         return False
@@ -28,6 +31,7 @@ def parsePrint():
     return False
 
 def parseInput():
+    print("In parseInput()")
     if nextToken[0] != lexer.LEXEME:
         parseError("Expected command got: " + str(nextToken))
         return False
@@ -35,6 +39,7 @@ def parseInput():
         lex()
         if nextToken[0] == lexer.ID_TOKEN:
             lex()
+            print("get returns true!")
             return True
         else:
             parseError("Expected ID")
@@ -42,7 +47,10 @@ def parseInput():
     return False
 
 def parseValue():
+    print("Inside of parseValue()")
     good = nextToken[0] == lexer.ID_TOKEN or nextToken[0] == lexer.INT_TOKEN
+    print("nextToken[0]: ", nextToken[0])
+    print("Good value: ", good)
     if good:
         lex()
         return True
@@ -59,6 +67,8 @@ def parseValue():
     return False
 
 def parse_v_expr():
+    print("Inside of parse_v_expr()")
+    print("nextToken[1]: ", nextToken[1])
     good = nextToken[1] == ">" or nextToken[1] == ">=" or nextToken[1] == "<" or nextToken[1] == "<=" or nextToken[1] == "==" or nextToken[1] == "!="
     if good:
         lex()
@@ -69,6 +79,7 @@ def parse_v_expr():
     return False
 
 def parseFactor():
+    print("Inside of parseFactor()")
     if parseValue():
         if parse_v_expr():
             lex()
@@ -82,6 +93,7 @@ def parse_f_expr():
     return False
 
 def parseTerm():
+    print("Inside of parseTerm()")
     if parseFactor():
         if parse_f_expr():
             lex()
@@ -97,12 +109,15 @@ def parse_t_expr():
     return False
 
 def parse_n_expr():
+    print("Inside of parse_n_expr()")
     if parseTerm():
         if parse_t_expr():
             lex()
             return True
 
 def parse_b_expr():
+    print("Inside of parse_b_expr()")
+    print("nextToken[1]", nextToken[1])
     if nextToken[1] == "and" or nextToken[1] == "or":
         lex()
         if parse_n_expr():
@@ -111,18 +126,21 @@ def parse_b_expr():
 
     return False
 
+# Fix up this mess! Make sure it goes in right order so the if statement works!
 def parseExpr():
+    print("Inside of parseExpr()")
     if parse_n_expr():
         if parse_b_expr():
             lex()
             return True
 
 def parseAssign():
+    print("In parseAssign()")
     if nextToken[0] != lexer.LEXEME:
         parseError("Expected command got: " + str(nextToken))
         return False
     good = nextToken[0] == lexer.ID_TOKEN
-    if good():
+    if good:
         lex()
         if nextToken[0] == lexer.LEXEME and nextToken[1] == '=':
             if parseExpr():
@@ -130,8 +148,10 @@ def parseAssign():
                 return True
 
 def parseIf():
+    print("In parseIf()")
     if nextToken[0] != lexer.LEXEME:
         parseError("Expected command got: " + str(nextToken))
+    print("Printing inside of parseIf(): ", nextToken[1])
     if nextToken[1] == "if":
         lex()
         if parseExpr():
@@ -147,6 +167,7 @@ def parseIf():
     return False
 
 def parseWhile():
+    print("In parseWhile()")
     if nextToken[0] != lexer.LEXEME:
         parseError("Expected command got: " + str(nextToken))
 
@@ -162,6 +183,7 @@ def parseWhile():
     return False
 
 def parseDoWhile():
+    print("In parseDoWhile()")
     if nextToken[0] != lexer.LEXEME:
         parseError("Expected command got: " + str(nextToken))
 
@@ -177,6 +199,7 @@ def parseDoWhile():
     return False
 
 def parseStmt():
+    print("In parseStmt()")
     global nextToken
     global input
     bool_return = parsePrint() or parseInput() or parseAssign() or parseIf() or parseWhile() or parseDoWhile()
@@ -185,7 +208,10 @@ def parseStmt():
 
 
 def parseStmtList():
+    print("In parseStmtList()")
     if parseStmt():
+        print("After parseStmt()")
+        print(nextToken[0], ", ", nextToken[1])
         if nextToken[0] == lexer.LEXEME and nextToken[1] == ";":
             lex()
             return parseStmtList()
@@ -195,6 +221,7 @@ def parseStmtList():
         return False
 
 def parseProg():
+    print("In parseProg()")
     if parseStmtList():
         if nextToken[0] != lexer.END_OF_INPUT and not (nextToken[0] == lexer.LEXEME and nextToken[1] == "end"):
             return parseProg()
@@ -208,15 +235,14 @@ def parseProg():
 filename = input("Enter file name: ")
 file = open(filename)
 input = list(file.read())
-
 lex()
 
 if nextToken[0] == lexer.ERROR:
     print("Lex Error: ",nextToken[1])
 else:
+    print("Before if parseProg next token: ", nextToken[0])
     if parseProg():
         if nextToken[0] != lexer.END_OF_INPUT:
           print("Parse Error: unrecognized trailing characters")
         else:
           print("Valid Program")
-
