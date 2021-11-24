@@ -1,2 +1,2 @@
-print "Hi"
-print "Hey";
+print "Hi";
+print (x and 5);
