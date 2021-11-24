@@ -1,2 +1,3 @@
 print "Hi";
+get x;
 print (x and 5);

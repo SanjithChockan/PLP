@@ -140,14 +140,31 @@ def parsePrint():
         if parg():
             return True
     return False
+
+def parseInput():
+    print("In parseInput()")
+    # increment to next Token
+    lex()
+    #check if token is a valid ID Token
+    if nextToken[0] == lexer.ID_TOKEN:
+        # increment to next Token
+        lex()
+        return True
+    print("Expected ID after \"get\"")
+    return False
+
 def parseStmt():
     print("In parseStmt()")
     global nextToken
     global input
 
-    bool_return = parsePrint()
+    if nextToken[1] == "print":
+        return parsePrint()
+    elif nextToken[1] == "get":
+        return parseInput()
 
-    return bool_return
+    print("command not found")
+    return False
 
 def parseStmtList():
     print("In parseStmtList()")
