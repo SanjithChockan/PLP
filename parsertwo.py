@@ -195,6 +195,19 @@ def parseWhile():
     print("While loop not implemented right")
     return False
 
+def parseAssign():
+    print("Inside parseAssign()")
+    # increment to next token
+    lex()
+    if nextToken[1] == "=":
+        # incrmeent to next token
+        lex()
+        if parseExpr():
+            print("parseExpr returns True")
+            return True
+    print("Assigned incorrenctly")
+    return False
+
 def parseStmt():
     print("In parseStmt()")
     global nextToken
@@ -208,6 +221,8 @@ def parseStmt():
         return parseIf()
     elif nextToken[1] == "while":
         return parseWhile()
+    elif nextToken[0] == lexer.ID_TOKEN:
+        return parseAssign()
     # next two elif statements pertain to if statements
     elif nextToken[1] == "else":
         return True
