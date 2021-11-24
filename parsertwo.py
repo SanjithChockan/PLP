@@ -177,6 +177,24 @@ def parseIf():
     print("If statement not implemented right")
     return False
 
+def parseWhile():
+    print("In parseWhile()")
+    # increment to next token
+    lex()
+    if parseExpr():
+        print("parseExpr() returns True")
+        if nextToken[1] == "do":
+            # increment to next token
+            lex()
+            if parseStmtList():
+                print("parseStmtList() returns True")
+                if nextToken[1] == "end":
+                    # increment to next token
+                    lex()
+                    return True
+    print("While loop not implemented right")
+    return False
+
 def parseStmt():
     print("In parseStmt()")
     global nextToken
@@ -188,9 +206,12 @@ def parseStmt():
         return parseInput()
     elif nextToken[1] == "if":
         return parseIf()
+    elif nextToken[1] == "while":
+        return parseWhile()
     # next two elif statements pertain to if statements
     elif nextToken[1] == "else":
         return True
+    # also helps with while and do while loops
     elif nextToken[1] == "end":
         return True
 
