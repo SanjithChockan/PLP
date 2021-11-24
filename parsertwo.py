@@ -37,7 +37,10 @@ def parseTerm():
 def parse_f_expr():
     print("Inside parse_f_expr")
     if nextToken[1] == "*" or nextToken[1] == "/" or nextToken[1] == "%":
+        print("Debugging in parse_f_expr")
+        print("(nextToken[0], nextToken[1]) = (", nextToken[0], ", ", nextToken[1], ")")
         # increment to next token
+        lex()
         if parseTerm():
             return True
         else:
@@ -73,7 +76,9 @@ def parseValue():
     if good:
         print("Valid value; Either ID or INT")
         # increment to next token
+        print("(nextToken[0], nextToken[1]) = (", nextToken[0], ", ", nextToken[1], ")")
         lex()
+        print("(nextToken[0], nextToken[1]) = (", nextToken[0], ", ", nextToken[1], ")")
         return True
     if nextToken[1] == "-" or nextToken == "not":
         # increment to next token and check whether if it is a valid Value
@@ -165,6 +170,8 @@ def parseIf():
             lex()
             if parseStmtList():
                 print("parseStmtList returns True (inside parseIf() after then)")
+                print("Debugging")
+                print("(nextToken[0], nextToken[1]) = (", nextToken[0], ", ", nextToken[1], ")")
                 if nextToken[1] == "else":
                     # increment to next token
                     lex()
