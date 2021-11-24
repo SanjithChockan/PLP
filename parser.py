@@ -1,5 +1,15 @@
 import lexer
 
+keywords = {}
+keywords_one= {"print": 1,
+            "get": 1,
+            "if": 1,
+            "then": 1,
+            "else": 1,
+            "end": 1,
+            "while": 1,
+            "do": 1}
+
 def parseError(msg):
     print("Parse Error: " + msg + " at line " + str(lexer.line))
 
@@ -10,16 +20,17 @@ def lex():
 
 # takes either a STRING or an EXPR
 def parg():
-    print("At parg(), nextToken[0] == ", nextToken[0])
-    good = nextToken[0] == lexer.STRING_TOKEN
-    if good:
-        lex()
-    else:
-        parseError("Expected String")
+    print("In parg()")
+    print("(nextToken[0], nextToken[1]) = (", nextToken[0], ", ", nextToken[1], ")")
+    good = (nextToken[0] == lexer.STRING_TOKEN) or parseExpr()
+    print("Is valid print argument: ", good)
+    if not good:
+        parseError("Expected String or Expression")
     return good
 
 def parsePrint():
     print("In parsePrint()")
+    print("(nextToken[0], nextToken[1]) = (", nextToken[0], ", ", nextToken[1], ")")
     if nextToken[0] != lexer.LEXEME:
         parseError("Expected command got: " + str(nextToken))
         return False
@@ -49,81 +60,94 @@ def parseInput():
 def parseValue():
     print("Inside of parseValue()")
     good = nextToken[0] == lexer.ID_TOKEN or nextToken[0] == lexer.INT_TOKEN
-    print("nextToken[0]: ", nextToken[0])
+    print("(nextToken[0], nextToken[1]) = (", nextToken[0], ", ", nextToken[1], ")")
     print("Good value: ", good)
     if good:
         lex()
+        print("(nextToken[0], nextToken[1]) = (", nextToken[0], ", ", nextToken[1], ")")
         return True
+    # check later to see if it iterates correctly
     if nextToken[1] == "-" or nextToken[1] == "not":
         lex()
-        return True
+        good = nextToken[0] == lexer.ID_TOKEN or nextToken[0] == lexer.INT_TOKEN
+        return good
     if nextToken[1] == "(":
+        print("Starts with opening parenthesis")
         lex()
         if parseExpr():
-            lex()
+            print("Comes after parseExpr inside of parenthesis")
+            #lex()
+            print("(nextToken[0], nextToken[1]) = (", nextToken[0], ", ", nextToken[1], ")")
             if nextToken[1] == ")":
+                print("Closes with closing parenthesis")
                 lex()
                 return True
     return False
 
 def parse_v_expr():
     print("Inside of parse_v_expr()")
-    print("nextToken[1]: ", nextToken[1])
+    print("(nextToken[0], nextToken[1]) = (", nextToken[0], ", ", nextToken[1], ")")
     good = nextToken[1] == ">" or nextToken[1] == ">=" or nextToken[1] == "<" or nextToken[1] == "<=" or nextToken[1] == "==" or nextToken[1] == "!="
     if good:
         lex()
         if parseValue():
-            lex()
             return True
-
+    elif nextToken[0] == lexer.LEXEME and (nextToken[1] not in keywords):
+        return True
     return False
 
 def parseFactor():
     print("Inside of parseFactor()")
     if parseValue():
         if parse_v_expr():
-            lex()
             return True
 
 def parse_f_expr():
-    if nextToken[1] == "*" or nextToken[1] == "/" or nextToken[1] == "%":
+    print("Inside of parse_f_expr")
+    print("(nextToken[0], nextToken[1]) = (", nextToken[0], ", ", nextToken[1], ")")
+    if nextToken[1] == "*" or nextToken[1] == "/" or nextToken[1] == "%" or nextToken[1] == "":
         if parseTerm():
             lex()
             return True
+    elif nextToken[0] == lexer.LEXEME and (nextToken[1] not in keywords):
+        return True
     return False
 
 def parseTerm():
     print("Inside of parseTerm()")
     if parseFactor():
         if parse_f_expr():
-            lex()
             return True
 
 def parse_t_expr():
-    if nextToken[1] == "+" or nextToken[1] == "-":
+    print("Inside of parse_t_expr")
+    print("(nextToken[0], nextToken[1]) = (", nextToken[0], ", ", nextToken[1], ")")
+    if nextToken[1] == "+" or nextToken[1] == "-" or nextToken[1] == "":
         lex()
         if parse_n_expr():
             lex()
             return True
-
+    elif nextToken[0] == lexer.LEXEME and (nextToken[1] not in keywords):
+        return True
     return False
 
 def parse_n_expr():
     print("Inside of parse_n_expr()")
+    print("(nextToken[0], nextToken[1]) = (", nextToken[0], ", ", nextToken[1], ")")
     if parseTerm():
         if parse_t_expr():
-            lex()
             return True
 
 def parse_b_expr():
     print("Inside of parse_b_expr()")
-    print("nextToken[1]", nextToken[1])
-    if nextToken[1] == "and" or nextToken[1] == "or":
+    print("(nextToken[0], nextToken[1]) = (", nextToken[0], ", ", nextToken[1], ")")
+    if nextToken[1] == "and" or nextToken[1] == "or" or nextToken[1] == "":
         lex()
         if parse_n_expr():
-            lex()
+            #lex()
             return True
-
+    elif nextToken[0] == lexer.LEXEME and (nextToken[1] not in keywords):
+        return True
     return False
 
 # Fix up this mess! Make sure it goes in right order so the if statement works!
@@ -131,11 +155,10 @@ def parseExpr():
     print("Inside of parseExpr()")
     if parse_n_expr():
         if parse_b_expr():
-            lex()
             return True
 
 def parseAssign():
-    print("In parseAssign()")
+    #print("In parseAssign()")
     if nextToken[0] != lexer.LEXEME:
         parseError("Expected command got: " + str(nextToken))
         return False
@@ -148,7 +171,7 @@ def parseAssign():
                 return True
 
 def parseIf():
-    print("In parseIf()")
+    #print("In parseIf()")
     if nextToken[0] != lexer.LEXEME:
         parseError("Expected command got: " + str(nextToken))
     print("Printing inside of parseIf(): ", nextToken[1])
@@ -156,6 +179,7 @@ def parseIf():
         lex()
         if parseExpr():
             if nextToken[1] == "then":
+                print("Processes then in if")
                 lex()
                 if parseStmtList():
                     if nextToken[1] == "else":
@@ -167,7 +191,7 @@ def parseIf():
     return False
 
 def parseWhile():
-    print("In parseWhile()")
+    #print("In parseWhile()")
     if nextToken[0] != lexer.LEXEME:
         parseError("Expected command got: " + str(nextToken))
 
@@ -183,7 +207,7 @@ def parseWhile():
     return False
 
 def parseDoWhile():
-    print("In parseDoWhile()")
+    #print("In parseDoWhile()")
     if nextToken[0] != lexer.LEXEME:
         parseError("Expected command got: " + str(nextToken))
 
@@ -211,8 +235,9 @@ def parseStmtList():
     print("In parseStmtList()")
     if parseStmt():
         print("After parseStmt()")
-        print(nextToken[0], ", ", nextToken[1])
+        print("(nextToken[0], nextToken[1]) = (", nextToken[0], ", ", nextToken[1], ")")
         if nextToken[0] == lexer.LEXEME and nextToken[1] == ";":
+            print("Reach end of statement")
             lex()
             return parseStmtList()
         else:

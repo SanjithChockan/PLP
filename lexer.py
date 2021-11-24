@@ -1,4 +1,7 @@
 import sys
+
+# Rewrite entire parser for neatness
+
 # Return Types for lex(input)
 ID_TOKEN = 0 # The thing returned is an ID token
 INT_TOKEN = 1 # The thing returned is an INT token
