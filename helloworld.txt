@@ -1,3 +1,9 @@
-print "Hi";
 get x;
-print (x and 5);
+get y;
+get z;
+if (x > y and y) - z
+then
+print "\t It is true!\n";
+else
+print "\t It is false!!\n";
+end;

@@ -153,6 +153,30 @@ def parseInput():
     print("Expected ID after \"get\"")
     return False
 
+def parseIf():
+    print("In parseIf()")
+    #increment to next Token
+    lex()
+    # check if expression is valid
+    if parseExpr():
+        print("parseExpr() returns True (inside of parseIf())")
+        if nextToken[1] == "then":
+            # increment to next token
+            lex()
+            if parseStmtList():
+                print("parseStmtList returns True (inside parseIf() after then)")
+                if nextToken[1] == "else":
+                    # increment to next token
+                    lex()
+                    if parseStmtList():
+                        print("parseStmtList returns True (inside parseIf() after else)")
+                        if nextToken[1] == "end":
+                            # increment to next token
+                            lex()
+                            return True
+    print("If statement not implemented right")
+    return False
+
 def parseStmt():
     print("In parseStmt()")
     global nextToken
@@ -162,6 +186,13 @@ def parseStmt():
         return parsePrint()
     elif nextToken[1] == "get":
         return parseInput()
+    elif nextToken[1] == "if":
+        return parseIf()
+    # next two elif statements pertain to if statements
+    elif nextToken[1] == "else":
+        return True
+    elif nextToken[1] == "end":
+        return True
 
     print("command not found")
     return False
@@ -178,6 +209,12 @@ def parseStmtList():
             if nextToken[0] == lexer.END_OF_INPUT:
                 return True
             return parseStmtList()
+        # next two if statements pertains to parseIf()
+        if nextToken[0] == lexer.LEXEME and nextToken[1] == "else":
+            return True
+        if nextToken[0] == lexer.LEXEME and nextToken[1] == "end":
+            return True
+
         elif nextToken[0] == lexer.LEXEME and nextToken[1] != ";":
             print("Expected a \";\"")
             return False
