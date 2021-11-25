@@ -1,5 +1,7 @@
 import lexer
 
+isDoWhile = False
+
 def lex():
     global nextToken
     global input
@@ -130,8 +132,9 @@ def parg():
     print("Is valid print argument: ", good)
     if not good:
         print("Expected String or Expression")
-    # increment to next token
-    lex()
+    # increment to next token if it is a string only
+    if nextToken[0] == lexer.STRING_TOKEN:
+        lex()
     return good
 
 def parsePrint():
@@ -215,10 +218,33 @@ def parseAssign():
     print("Assigned incorrenctly")
     return False
 
+def parseDoWhile():
+    global isDoWhile
+    isDoWhile = True
+    print("Inside parseDoWhile()")
+    # increment to next token
+    lex()
+    if parseStmtList():
+        print("parseStmtList() returns True")
+        if nextToken[1] == "while":
+            # increment to next token
+            lex()
+            if parseExpr():
+                print("parseExpr() returns True")
+                if nextToken[1] == "end":
+                    # increment to next Token
+                    lex()
+                    #reset isDoWhile
+                    isDoWhile = False
+                    return True
+    print("Do while loop wasn't implemented right")
+    return False
+
 def parseStmt():
     print("In parseStmt()")
     global nextToken
     global input
+    isDoWhile
 
     if nextToken[1] == "print":
         return parsePrint()
@@ -226,7 +252,11 @@ def parseStmt():
         return parseInput()
     elif nextToken[1] == "if":
         return parseIf()
+    elif nextToken[1] == "do":
+        return parseDoWhile()
     elif nextToken[1] == "while":
+        if isDoWhile:
+            return True
         return parseWhile()
     elif nextToken[0] == lexer.ID_TOKEN:
         return parseAssign()
@@ -257,7 +287,9 @@ def parseStmtList():
             return True
         if nextToken[0] == lexer.LEXEME and nextToken[1] == "end":
             return True
-
+        # this if statement takes care of do while
+        if nextToken[0] == lexer.LEXEME and nextToken[1] == "while":
+            return True
         elif nextToken[0] == lexer.LEXEME and nextToken[1] != ";":
             print("Expected a \";\"")
             return False
