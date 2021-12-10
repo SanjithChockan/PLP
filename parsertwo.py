@@ -288,7 +288,7 @@ def parseStmtList():
             lex()
             # returns True and breaks out of parseStmtList() if it reaches the end of the program
             if nextToken[0] == lexer.END_OF_INPUT:
-                return parse
+                return [parse]
             return [parse] + parseStmtList()
         # next two if statements pertains to parseIf()
         if nextToken[0] == lexer.LEXEME and nextToken[1] == "else":
@@ -312,9 +312,9 @@ def parseProg():
         print("parseStmtList() returns True")
         print("(nextToken[0], nextToken[1]) = (", nextToken[0], ", ", nextToken[1], ")")
         if nextToken[0] != lexer.END_OF_INPUT:
-            return [parseList] + parseProg()
+            return parseList + parseProg()
         else:
-            return [parseList]
+            return parseList
     return False
 
 def fileInput():
