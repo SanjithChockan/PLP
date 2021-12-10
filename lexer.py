@@ -154,14 +154,3 @@ def lex(input):
     else:
         return [[ERROR, "Unexpected character '" + input[0] + "' on line " + str(line)], input]
 
-
-#print("Enter program: ")
-#input = list(sys.stdin.read())
-#[next, input] = lex(input)
-
-#while next[0] != END_OF_INPUT and next[0] != ERROR:
-#    print(next)
-#    [next, input] = lex(input)
-#
-#if next[0] == ERROR:
-#    print("ERROR: " + next[1])
