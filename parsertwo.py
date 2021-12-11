@@ -9,128 +9,117 @@ def lex():
     [nextToken, input] = lexer.lex(input)
 
 def parse_n_expr():
-    print("In parse_n_expr()")
-    if parseTerm():
-        print("parseTerm() returns True")
-        if parse_t_expr():
-            print("parse_t_expr() returns True")
-            return True
+    pTerm = parseTerm()
+    if pTerm != False:
+        t_expr = parse_t_expr()
+        if t_expr != False:
+            return pTerm + t_expr
     return False
 
 def parse_t_expr():
     # Complete
-    print("In parse_t_expr()")
     if nextToken[1] == "+" or nextToken[1] == "-":
         # increment to next token
+        sign = nextToken[1]
         lex()
-        if parse_n_expr():
-            return True
+        n_expr = parse_n_expr()
+        if n_expr != False:
+            return [sign] + n_expr
         else:
             return False
-    return True
+    return []
 
 def parseTerm():
-    print("In parseTerm()")
-    if parseFactor():
-        print("parseFactor returns True")
-        if parse_f_expr():
-            print("parse_f_expr returns True")
-            return True
+    pFactor = parseFactor()
+    if pFactor != False:
+        f_expr = parse_f_expr()
+        if f_expr != False:
+            return pFactor + f_expr
 
 def parse_f_expr():
-    print("Inside parse_f_expr")
     if nextToken[1] == "*" or nextToken[1] == "/" or nextToken[1] == "%":
-        print("Debugging in parse_f_expr")
-        print("(nextToken[0], nextToken[1]) = (", nextToken[0], ", ", nextToken[1], ")")
+        op = nextToken[1]
         # increment to next token
         lex()
-        if parseTerm():
-            return True
+        pTerm = parseTerm()
+        if pTerm != False:
+            return [op] + pTerm
         else:
             return False
-    return True
+    return []
 
 def parseFactor():
-    print("Inside parseFactor()")
-    if parseValue():
-        print("parseValue() returns True")
-        if parse_v_expr():
-            print("parse_v_expr() returns True")
-            return True
+    pValue = parseValue()
+    if pValue != False:
+        v_expr = parse_v_expr()
+        if v_expr != False:
+            return pValue + v_expr
     return False
 
 def parse_v_expr():
     # Complete
-    print("In parse_v_expr()")
     good = nextToken[1] == ">" or nextToken[1] == ">=" or nextToken[1] == "<" or nextToken[1] == "<=" or nextToken[1] == "==" or nextToken[1] == "!="
     if good:
         # increment to next token
+        tmp = nextToken[1]
         lex()
-        if parseValue():
-            print("parseValue returns True; inside parse_v_expr()")
-            return True
+        pValue = parseValue()
+        if pValue != False:
+            return [tmp] + pValue
         else:
             return False
-    return True
+    return []
 
 def parseValue():
-    print("Inside parseValue()")
     good = nextToken[0] == lexer.ID_TOKEN or nextToken[0] == lexer.INT_TOKEN
     if good:
-        print("Valid value; Either ID or INT")
+        tmp = nextToken
         # increment to next token
-        print("(nextToken[0], nextToken[1]) = (", nextToken[0], ", ", nextToken[1], ")")
         lex()
-        print("(nextToken[0], nextToken[1]) = (", nextToken[0], ", ", nextToken[1], ")")
-        return True
+        return [tmp]
     if nextToken[1] == "-" or nextToken == "not":
         # increment to next token and check whether if it is a valid Value
         lex()
-        if parseValue():
-            return True
+        tmp = nextToken
+        pValue = parseValue()
+        if pValue != False:
+            return ["-", nextToken]
         return False
 
     if nextToken[1] == "(":
-        print("Expression starts with opening parenthesis: (")
         # increment to next token
         lex()
         if parseExpr():
-            print("parseExpr return True (inside parenthesis)")
             if nextToken[1] == ")":
-                print("Expression closes with closing parenthesis: )")
                 # increment to next token
                 lex()
                 return True
     return False
 
 def parse_b_expr():
-    print("In parse_b_expr")
     if nextToken[1] == "and" or nextToken[1] == "or":
+        tmp = nextToken[1]
         # increment to next token
         lex()
-        if parse_n_expr():
-            print("parse_n_expr() returns True (inside parse_b_expr)")
-            return True
+        n_expr = parse_n_expr()
+        if n_expr != False:
+            return [tmp] + n_expr
         else:
             return False
-    return True
+    return []
 
 def parseExpr():
-    print("In parseExpr()")
-    if parse_n_expr():
-        print("parse_n_expr() returns True")
-        if parse_b_expr():
-            print("parse_b_expr() return True")
-            return True
+    n_expr = parse_n_expr()
+    if n_expr != False:
+        b_expr = parse_b_expr()
+        if b_expr != False:
+            return n_expr + b_expr
     # returns False if expression not Valid
     return False
 
 def parg():
-    print("In parg()")
-    print("(nextToken[0], nextToken[1]) = (", nextToken[0], ", ", nextToken[1], ")")
     # Checks if the argument inside of print is either a STRING_TOKEN or a valid expression
     good = (nextToken[0] == lexer.STRING_TOKEN) or parseExpr()
-    print("Is valid print argument: ", good)
     if not good:
         print("Expected String or Expression")
     # increment to next token if it is a string only
@@ -142,8 +131,6 @@ def parg():
     return good
 
 def parsePrint():
-    print("In parsePrint()")
-    print("(nextToken[0], nextToken[1]) = (", nextToken[0], ", ", nextToken[1], ")")
     if nextToken[0] != lexer.LEXEME:
         return False
     if nextToken[1] == "print":
@@ -157,98 +144,82 @@ def parsePrint():
     return False
 
 def parseInput():
-    print("In parseInput()")
     # increment to next Token
     lex()
     #check if token is a valid ID Token
     if nextToken[0] == lexer.ID_TOKEN:
+        tmp = nextToken[1]
         # increment to next Token
         lex()
-        return True
+        return ["get", tmp]
     print("Expected ID after \"get\"")
     return False
 
 def parseIf():
-    print("In parseIf()")
     #increment to next Token
     lex()
     # check if expression is valid
-    if parseExpr():
-        print("parseExpr() returns True (inside of parseIf())")
+    pExpr = parseExpr()
+    if pExpr != False:
         if nextToken[1] == "then":
             # increment to next token
             lex()
-            if parseStmtList():
-                print("parseStmtList returns True (inside parseIf() after then)")
-                print("Debugging")
-                print("(nextToken[0], nextToken[1]) = (", nextToken[0], ", ", nextToken[1], ")")
+            parseList = parseStmtList()
+            if parseList != False:
                 if nextToken[1] == "else":
                     # increment to next token
                     lex()
-                    if parseStmtList():
-                        print("parseStmtList returns True (inside parseIf() after else)")
+                    parseList2 = parseStmtList()
+                    if parseList2 != False:
                         if nextToken[1] == "end":
                             # increment to next token
                             lex()
-                            return True
-    print("If statement not implemented right")
+                            return ["if", pExpr, parseList, parseList2]
     return False
 
 def parseWhile():
-    print("In parseWhile()")
     # increment to next token
     lex()
     if parseExpr():
-        print("parseExpr() returns True")
         if nextToken[1] == "do":
             # increment to next token
             lex()
             if parseStmtList():
-                print("parseStmtList() returns True")
                 if nextToken[1] == "end":
                     # increment to next token
                     lex()
                     return True
-    print("While loop not implemented right")
     return False
 
 def parseAssign():
-    print("Inside parseAssign()")
     # increment to next token
     lex()
     if nextToken[1] == "=":
         # incrmeent to next token
         lex()
         if parseExpr():
-            print("parseExpr returns True")
             return True
-    print("Assigned incorrenctly")
     return False
 
 def parseDoWhile():
     global isDoWhile
     isDoWhile = True
-    print("Inside parseDoWhile()")
     # increment to next token
     lex()
     if parseStmtList():
-        print("parseStmtList() returns True")
         if nextToken[1] == "while":
             # increment to next token
             lex()
             if parseExpr():
-                print("parseExpr() returns True")
                 if nextToken[1] == "end":
                     # increment to next Token
                     lex()
                     #reset isDoWhile
                     isDoWhile = False
                     return True
-    print("Do while loop wasn't implemented right")
     return False
 
 def parseStmt():
-    print("In parseStmt()")
     global nextToken
     global input
     isDoWhile
@@ -278,11 +249,8 @@ def parseStmt():
     return False
 
 def parseStmtList():
-    print("In parseStmtList()")
     parse = parseStmt()
     if parse != False:
-        print("parseStmt() returns True")
-        print("(nextToken[0], nextToken[1]) = (", nextToken[0], ", ", nextToken[1], ")")
         if nextToken[0] == lexer.LEXEME and nextToken[1] == ";":
             # increment to next token after end of statement
             lex()
@@ -292,9 +260,9 @@ def parseStmtList():
             return [parse] + parseStmtList()
         # next two if statements pertains to parseIf()
         if nextToken[0] == lexer.LEXEME and nextToken[1] == "else":
-            return True
+            return parse
         if nextToken[0] == lexer.LEXEME and nextToken[1] == "end":
-            return True
+            return parse
         # this if statement takes care of do while
         if nextToken[0] == lexer.LEXEME and nextToken[1] == "while":
             return True
@@ -306,11 +274,8 @@ def parseStmtList():
     return False
 
 def parseProg():
-    print("In parseProg()")
     parseList = parseStmtList()
     if parseList != False:
-        print("parseStmtList() returns True")
-        print("(nextToken[0], nextToken[1]) = (", nextToken[0], ", ", nextToken[1], ")")
         if nextToken[0] != lexer.END_OF_INPUT:
             return parseList + parseProg()
         else:
