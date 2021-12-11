@@ -180,15 +180,20 @@ def parseIf():
 def parseWhile():
     # increment to next token
     lex()
-    if parseExpr():
+    pExpr = parseExpr()
+    print("pExpr: ", pExpr)
+    if pExpr != False:
         if nextToken[1] == "do":
             # increment to next token
             lex()
-            if parseStmtList():
+            print("nextToken: ", nextToken)
+            parseList = parseStmtList()
+            print("parseList: ", parseList)
+            if parseList != False:
                 if nextToken[1] == "end":
                     # increment to next token
                     lex()
-                    return True
+                    return ["while", pExpr, parseList]
     return False
 
 def parseAssign():
@@ -243,7 +248,7 @@ def parseStmt():
         return True
     # also helps with while and do while loops
     elif nextToken[1] == "end":
-        return True
+        return []
 
     print("command not found")
     return False
@@ -265,7 +270,7 @@ def parseStmtList():
             return parse
         # this if statement takes care of do while
         if nextToken[0] == lexer.LEXEME and nextToken[1] == "while":
-            return True
+            return parse
         elif nextToken[0] == lexer.LEXEME and nextToken[1] != ";":
             print("Expected a \";\"")
             return False
