@@ -1,8 +1,8 @@
 print "Testing Interpreter";
 get x;
-while x < 5
 do
 get x;
+while x < 5
 end;
 if x < 5
 then

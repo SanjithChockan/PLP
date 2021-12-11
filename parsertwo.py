@@ -211,17 +211,19 @@ def parseDoWhile():
     isDoWhile = True
     # increment to next token
     lex()
-    if parseStmtList():
+    parseList = parseStmtList()
+    if parseList != False:
         if nextToken[1] == "while":
             # increment to next token
             lex()
-            if parseExpr():
+            pExpr = parseExpr()
+            if pExpr != False:
                 if nextToken[1] == "end":
                     # increment to next Token
                     lex()
                     #reset isDoWhile
                     isDoWhile = False
-                    return True
+                    return ["do", parseList, pExpr]
     return False
 
 def parseStmt():
@@ -239,7 +241,7 @@ def parseStmt():
         return parseDoWhile()
     elif nextToken[1] == "while":
         if isDoWhile:
-            return True
+            return []
         return parseWhile()
     elif nextToken[0] == lexer.ID_TOKEN:
         return parseAssign()
@@ -297,7 +299,6 @@ def fileInput():
     if nextToken[0] == lexer.ERROR:
         print("Lex Error: ",nextToken[1])
     else:
-        print("Before if parseProg next token: ", nextToken[0])
         prog = parseProg()
         if prog != False:
             if nextToken[0] != lexer.END_OF_INPUT:

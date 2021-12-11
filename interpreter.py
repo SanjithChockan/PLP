@@ -116,7 +116,72 @@ def interpreter(prog):
                     if reg1 == reg2:
                         good = True
 
+        elif stmt[0] == "do":
+            interpreter(stmt[1])
+            if stmt[2][0][0] == lexer.ID_TOKEN:
+                reg1 = parsertwo.symtab[stmt[2][0][1]]
+            elif stmt[2][0][0] == lexer.INT_TOKEN:
+                reg1 = stmt[2][0][1]
+            # get right side of expression
+            if stmt[2][2][0] == lexer.ID_TOKEN:
+                reg2 = parsertwo.symtab[stmt[2][2][1]]
+            elif stmt[2][2][0] == lexer.INT_TOKEN:
+                reg2 = stmt[2][2][1]
+
+            good = False
+
+            if stmt[2][1] == "<":
+                if reg1 < reg2:
+                    good = True
+            elif stmt[2][1] == "<=":
+                if reg1 <= reg2:
+                    good = True
+            elif stmt[2][1] == ">":
+                if reg1 > reg2:
+                    good = True
+            elif stmt[2][1] == ">=":
+                if reg1 >= reg2:
+                    good = True
+            elif stmt[2][1] == "==":
+                if reg1 == reg2:
+                    good = True
+            elif stmt[2][1] == "!=":
+                if reg1 == reg2:
+                    good = True
+
+            while good:
+                interpreter(stmt[2])
+
+                if stmt[2][0][0] == lexer.ID_TOKEN:
+                    reg1 = parsertwo.symtab[stmt[2][0][1]]
+                elif stmt[2][0][0] == lexer.INT_TOKEN:
+                    reg1 = stmt[2][0][1]
+                # get right side of expression
+                if stmt[2][2][0] == lexer.ID_TOKEN:
+                    reg2 = parsertwo.symtab[stmt[2][2][1]]
+                elif stmt[2][2][0] == lexer.INT_TOKEN:
+                    reg2 = stmt[2][2][1]
+
+                good = False
+
+                if stmt[2][1] == "<":
+                    if reg1 < reg2:
+                        good = True
+                elif stmt[2][1] == "<=":
+                    if reg1 <= reg2:
+                        good = True
+                elif stmt[2][1] == ">":
+                    if reg1 > reg2:
+                        good = True
+                elif stmt[2][1] == ">=":
+                    if reg1 >= reg2:
+                        good = True
+                elif stmt[2][1] == "==":
+                    if reg1 == reg2:
+                        good = True
+                elif stmt[2][1] == "!=":
+                    if reg1 == reg2:
+                        good = True
 
 prog = parsertwo.fileInput()
-print(prog)
 interpreter(prog)
