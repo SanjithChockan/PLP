@@ -1,4 +1,4 @@
-import parsertwo
+import parser
 import lexer
 
 def evaluate(value):
@@ -11,17 +11,17 @@ def interpreter(prog):
             print(evaluate(stmt[1]))
 
         elif stmt[0] == "get":
-            parsertwo.symtab[stmt[1]] = int(input("Input Number: "))
+            parser.symtab[stmt[1]] = int(input("Input Number: "))
 
         elif stmt[0] == "if":
             # get left side of expression
             if stmt[1][0][0] == lexer.ID_TOKEN:
-                reg1 = parsertwo.symtab[stmt[1][0][1]]
+                reg1 = parser.symtab[stmt[1][0][1]]
             elif stmt[1][0][0] == lexer.INT_TOKEN:
                 reg1 = stmt[1][0][1]
             # get right side of expression
             if stmt[1][2][0] == lexer.ID_TOKEN:
-                reg2 = parsertwo.symtab[stmt[1][2][1]]
+                reg2 = parser.symtab[stmt[1][2][1]]
             elif stmt[1][2][0] == lexer.INT_TOKEN:
                 reg2 = stmt[1][2][1]
 
@@ -52,12 +52,12 @@ def interpreter(prog):
 
         elif stmt[0] == "while":
             if stmt[1][0][0] == lexer.ID_TOKEN:
-                reg1 = parsertwo.symtab[stmt[1][0][1]]
+                reg1 = parser.symtab[stmt[1][0][1]]
             elif stmt[1][0][0] == lexer.INT_TOKEN:
                 reg1 = stmt[1][0][1]
             # get right side of expression
             if stmt[1][2][0] == lexer.ID_TOKEN:
-                reg2 = parsertwo.symtab[stmt[1][2][1]]
+                reg2 = parser.symtab[stmt[1][2][1]]
             elif stmt[1][2][0] == lexer.INT_TOKEN:
                 reg2 = stmt[1][2][1]
 
@@ -86,12 +86,12 @@ def interpreter(prog):
                 interpreter(stmt[2])
 
                 if stmt[1][0][0] == lexer.ID_TOKEN:
-                    reg1 = parsertwo.symtab[stmt[1][0][1]]
+                    reg1 = parser.symtab[stmt[1][0][1]]
                 elif stmt[1][0][0] == lexer.INT_TOKEN:
                     reg1 = stmt[1][0][1]
                 # get right side of expression
                 if stmt[1][2][0] == lexer.ID_TOKEN:
-                    reg2 = parsertwo.symtab[stmt[1][2][1]]
+                    reg2 = parser.symtab[stmt[1][2][1]]
                 elif stmt[1][2][0] == lexer.INT_TOKEN:
                     reg2 = stmt[1][2][1]
 
@@ -119,12 +119,12 @@ def interpreter(prog):
         elif stmt[0] == "do":
             interpreter(stmt[1])
             if stmt[2][0][0] == lexer.ID_TOKEN:
-                reg1 = parsertwo.symtab[stmt[2][0][1]]
+                reg1 = parser.symtab[stmt[2][0][1]]
             elif stmt[2][0][0] == lexer.INT_TOKEN:
                 reg1 = stmt[2][0][1]
             # get right side of expression
             if stmt[2][2][0] == lexer.ID_TOKEN:
-                reg2 = parsertwo.symtab[stmt[2][2][1]]
+                reg2 = parser.symtab[stmt[2][2][1]]
             elif stmt[2][2][0] == lexer.INT_TOKEN:
                 reg2 = stmt[2][2][1]
 
@@ -153,12 +153,12 @@ def interpreter(prog):
                 interpreter(stmt[2])
 
                 if stmt[2][0][0] == lexer.ID_TOKEN:
-                    reg1 = parsertwo.symtab[stmt[2][0][1]]
+                    reg1 = parser.symtab[stmt[2][0][1]]
                 elif stmt[2][0][0] == lexer.INT_TOKEN:
                     reg1 = stmt[2][0][1]
                 # get right side of expression
                 if stmt[2][2][0] == lexer.ID_TOKEN:
-                    reg2 = parsertwo.symtab[stmt[2][2][1]]
+                    reg2 = parser.symtab[stmt[2][2][1]]
                 elif stmt[2][2][0] == lexer.INT_TOKEN:
                     reg2 = stmt[2][2][1]
 
@@ -183,5 +183,5 @@ def interpreter(prog):
                     if reg1 == reg2:
                         good = True
 
-prog = parsertwo.fileInput()
+prog = parser.fileInput()
 interpreter(prog)
